@@ -25,19 +25,28 @@ SELECT      EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY       -- Column
  WHERE      SALARY  >= 5000
  ORDER BY   SALARY DESC;                                     -- ORDER BY : 정렬 / DESC 내림차순
 
+
+
 -- 전화번호에 100이 포함된 직원
-SELECT PHONE_NUMBER 
+SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER 
  FROM  EMPLOYEES
- WHERE PHONE_NUMBER LIKE '%100%';           -- CONTAIN (X) -> LIKE 'KING%' / '%KING%' / '%KING'
+ WHERE PHONE_NUMBER LIKE '%100%'           -- CONTAIN (X) -> LIKE 'KING%' / '%KING%' / '%KING'
+ ORDER BY EMPLOYEE_ID ASC;
  
  
  
- -- 50번 부서의 직원을 출력해라
-SELECT *
+ 
+ -- 50번 부서의 직원을 출력해라        " ?_?" : 쌍따옴표 쓰는 경우 -> "별 칭 "
+SELECT  EMPLOYEE_ID                    "사 번",  -- 사번 : ALIAS, 별칭, 별명
+        FIRST_NAME ||' '|| LAST_NAME    이름,  -- 이름 :
+        DEPARTMENT_ID                   부서번호 --  부서번호 :
     FROM EMPLOYEES
-    WHERE DEPARTMENT_ID LIKE '%50%';
+    WHERE DEPARTMENT_ID = 50
+    ORDER BY FIRST_NAME ASC,LAST_NAME ASC;     -- ||'  '|| 정렬  / 
+    
     
 -- 부서가 없는 직원을 출력해라
 SELECT *
     FROM EMPLOYEES
     WHERE DEPARTMENT_ID IS NULL;
+ 
