@@ -36,17 +36,29 @@ SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER
  
  
  
- -- 50번 부서의 직원을 출력해라        " ?_?" : 쌍따옴표 쓰는 경우 -> "별 칭 "
-SELECT  EMPLOYEE_ID                    "사 번",  -- 사번 : ALIAS, 별칭, 별명
-        FIRST_NAME ||' '|| LAST_NAME    이름,  -- 이름 :
-        DEPARTMENT_ID                   부서번호 --  부서번호 :
+ -- 50번 부서의 직원을 출력해라                        -- " ?_?" : 쌍따옴표 쓰는 경우 -> "별 칭 "
+SELECT  EMPLOYEE_ID                    "사 번",        -- 별칭, 별명, ALIAS
+        FIRST_NAME ||' '|| LAST_NAME    이름,          -- 없이 사용 가능
+        DEPARTMENT_ID                AS 부서번호       -- AS : 가독성 때문에 사용
     FROM EMPLOYEES
     WHERE DEPARTMENT_ID = 50
     ORDER BY FIRST_NAME ASC,LAST_NAME ASC;     -- ||'  '|| 정렬  / 
     
     
+/*
+SELECT EMPLOYEE_ID "사 번"
+       RPAD(FIRST_NAME, 15, ' ') || LAST_NAME AS 이름, // RPAD/ 채우기
+       DEPARTMENT_ID AS 부서번호
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID = 50
+ORDER BY FIRST_NAME ASC, LAST_NAME ASC;
+*/
+    
+    
+    
 -- 부서가 없는 직원을 출력해라
-SELECT *
-    FROM EMPLOYEES
-    WHERE DEPARTMENT_ID IS NULL;
+SELECT      EMPLOYEE_ID
+          , FIRST_NAME || ' ' || LAST_NAME ENAME
+    FROM    EMPLOYEES
+    WHERE   DEPARTMENT_ID IS NULL;      -- = NULL ( 작동안함 )  => IS NULL / IS NOT NULL 만 작동
  
