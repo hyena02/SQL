@@ -20,10 +20,10 @@ SELECT      EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY       -- Column
  ORDER BY   SALARY DESC;                                     -- ORDER BY : 정렬 / DESC 내림차순
  
   -- 월급이 내림차순으로 직원정보를 출력
-SELECT      EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY       -- Column 
- FROM       EMPLOYEES                                        -- FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+SELECT      EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY     
+ FROM       EMPLOYEES                                    
  WHERE      SALARY  >= 5000
- ORDER BY   SALARY DESC;                                     -- ORDER BY : 정렬 / DESC 내림차순
+ ORDER BY   SALARY DESC;                                   
 
 
 
@@ -59,6 +59,7 @@ ORDER BY FIRST_NAME ASC, LAST_NAME ASC;
 -- 부서가 없는 직원을 출력해라
 SELECT      EMPLOYEE_ID
           , FIRST_NAME || ' ' || LAST_NAME ENAME
+          , DEPARTMENT_ID
     FROM    EMPLOYEES
     WHERE   DEPARTMENT_ID IS NULL;      -- = NULL ( 작동안함 )  => IS NULL / IS NOT NULL 만 작동
  
