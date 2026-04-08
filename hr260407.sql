@@ -730,8 +730,16 @@ FROM    EMPLOYEES
 SELECT  COUNT(EMPLOYEE_ID)      "직원수",
         SUM(SALARY)             "월급합",
         AVG(SALARY)             "월급평균",
+        MAX(SALARY)             "최대월급",
+        MIN(SALARY)             "최소월급"
 FROM EMPLOYEES;
 -- 부서 60번 부서 인원수 , 월급합, 월급평균
+SELECT  count(EMPLOYEE_ID)  "부서인원수",
+        SUM(SALARY)         "월급함",
+        AVG(SALARY)         "월급평균"
+FROM    EMPLOYEES
+WHERE   DEPARTMENT_ID = 60
+;
 -- 부서 50,60,80 부서가 아닌 인원수, 월급합, 월급평균
 
 
