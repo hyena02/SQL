@@ -595,6 +595,35 @@ SELECT  TO_CHAR(SYSDATE, 'AM'),
         DECODE(TO_CHAR(SYSDATE, 'AM'),'오전','午前','午後')
 FROM DUAL;
 
+SELECT  TO_CHAR(SYSDATE, 'DD')
+        DECODE(TO_CHAR(SYSDATE, 'DD'), 1, '日'
+                                     , 2, '月'
+                                     , 3, '火'
+                                     , 4, '水'
+                                     , 5, '木'
+                                     , 6, '金'
+                                     , 7,'土'
+                                     )
+FROM DUAL;
+
+SELECT TO_CHAR(SYSDATE, 'YYYY') || '年'
+    || TO_CHAR(SYSDATE, 'MM')   || '月'
+    || TO_CHAR(SYSDATE, 'DD')   || '日'
+    || TO_CHAR(SYSDATE, 'HH12') || '時'
+    || TO_CHAR(SYSDATE, 'MI')   || '分'
+    || TO_CHAR(SYSDATE, 'SS')   || '秒'
+    || CASE TO_CHAR(SYSDATE, 'DY')
+        WHEN '일' THEN '日'
+        WHEN '월' THEN '月'
+        WHEN '화' THEN '火'
+        WHEN '수' THEN '水'
+        WHEN '목' THEN '木'
+        WHEN '금' THEN '金'
+        WHEN '토' THEN '土'   
+        END                     || '曜日'
+    || DECODE( TO_CHAR(SYSDATE, 'AM '),'오전','午前','午後')
+FROM DUAL;
+
 ---------------------------------------------------------------
 
 -- DECODE로
@@ -675,14 +704,15 @@ FROM    EMPLOYEES
 /*
  집계함수 : AGGREGATE 함수
  모든 집계함수는 NULL 값을 포함하지 않는다
- SUM(), AVG(), MIN(), MAX(), COUNT(), VARIANCE()
+ SUM(), AVG(), MIN(), MAX(), COUNT(), STDDEV(),VARIANCE()
+ 합계   평균   최대   최소    줄수    표준편차   분산
  그루핑 : GROUP BY
  ~별 인원수
 */
 SELECT *                    FROM EMPLOYEES;            --모두 출력
 SELECT COUNT(*)             FROM EMPLOYEES;            --COUNT(*)      : 109 : ROW 줄 수 
 SELECT COUNT(EMPLOYEE_ID)   FROM EMPLOYEES;            --COUNT(어쩌고) : 109 
-SELECT COUNT(DEPARTMENT_ID) FROM EMPLOYEES;            --COUNT(어쩌고) : 106  -> NULL이 빠져서 -->
+SELECT COUNT(DEPARTMENT_ID) FROM EMPLOYEES;            --COUNT(어쩌고) : 106  ->               !!!NULL이 빠져서!!
 
 SELECT COUNT(EMPLOYEE_ID)   FROM EMPLOYEES
  WHERE DEPARTMENT_ID        IS NULL;                   -- 3 출력
@@ -698,7 +728,7 @@ SELECT MAX(SALARY)          FROM EMPLOYEES;            --MAX(SALARY)   :   24000
 SELECT MIN(SALARY)          FROM EMPLOYEES;            --MIN(SALARY)   :    2100    결과값 한줄
 
 SELECT SUM(SALARY) / COUNT(SALARY) FROM EMPLOYEES;      --6461.831775700934579439252336448598130841
-SELECT SUM(SALARY) / COUNT(*)      FROM EMPLOYEES;      --6343.266055045871559633027522935779816514  =>NULL 때문에
+SELECT SUM(SALARY) / COUNT(*)      FROM EMPLOYEES;      --6343.266055045871559633027522935779816514  =>NULL 때문에/    퇴사자가있다면 같이계산됨
 
 -- 60번 부서의 평균월급  => 5760
 SELECT AVG(SALARY)
@@ -725,33 +755,89 @@ FROM    EMPLOYEES
 ;
 
 -- 직원이 근무하는 부서의 수 : 부서장이 있는 부서수 : DEPARTMENTS
+SELECT  COUNT(DEPARTMENT_ID) 
+FROM DEPARTMENTS
+WHERE MANAGER_ID IS NOT NULL ;
 
--- 직원수, 월급합, 월급평균, 최대월급,, 최소월급
+-- 반올림 반내림 하는 법
+SELECT  7/2,                -- 3.5
+        ROUND(156.456, 2), ROUND(156.456, -2),  -- 156.46       /200 
+        TRUNC(156.456, 2), ROUND(156.456, -2)   -- 156.45       /100  
+FROM DUAL;
+
+
+-- 직원수, 월급합, 월급평균, 최대월급, 최소월급
 SELECT  COUNT(EMPLOYEE_ID)      "직원수",
         SUM(SALARY)             "월급합",
-        AVG(SALARY)             "월급평균",
+        ROUND(AVG(SALARY),3)    "월급평균", -- 소
         MAX(SALARY)             "최대월급",
         MIN(SALARY)             "최소월급"
-FROM EMPLOYEES;
+FROM EMPLOYEES
+;
+
 -- 부서 60번 부서 인원수 , 월급합, 월급평균
-SELECT  count(EMPLOYEE_ID)  "부서인원수",
+SELECT  COUNT(EMPLOYEE_ID)  "부서인원수",
         SUM(SALARY)         "월급함",
         AVG(SALARY)         "월급평균"
 FROM    EMPLOYEES
 WHERE   DEPARTMENT_ID = 60
 ;
--- 부서 50,60,80 부서가 아닌 인원수, 월급합, 월급평균
+
+
+-- 부서 50,60,80 부서가 아닌 인원수, 월급합, 월급평균    ---- 25	201716	8770.26
+/*------------------!!결과값 오류!!-------------------
+SELECT  COUNT(DEPARTMENT_ID)     "인원수",
+        SUM(SALARY)              "월급함",
+        ROUND(AVG(SALARY), 2)    "월급평균"
+FROM    EMPLOYEES
+WHERE   DEPARTMENT_ID NOT IN(50,60,80)           -- = 22 / 194716 / 8850.73  
+;
+
+SELECT  COUNT(DEPARTMENT_ID)     "인원수",
+        SUM(SALARY)              "월급함",
+        ROUND(AVG(SALARY), 2)    "월급평균"
+FROM    EMPLOYEES
+WHERE NOT  (DEPARTMENT_ID = 50
+AND         DEPARTMENT_ID = 60
+AND         DEPARTMENT_ID = 80)                  -- = 106 / 684416 / 6456.75
+;
+*/
+SELECT  COUNT(*)     "인원수",
+        SUM(SALARY)              "월급함",
+        ROUND(AVG(SALARY), 2)    "월급평균"
+FROM    EMPLOYEES
+WHERE   DEPARTMENT_ID NOT IN(50,60,80)
+OR      DEPARTMENT_ID IS NULL
+;
+SELECT  COUNT(*)        인원수,
+        SUM(SALARY)      월급합,
+        ROUND(AVG(SALARY),3)      월급평균
+FROM    EMPLOYEES           
+WHERE DEPARTMENT_ID IS NOT NULL
+AND   DEPARTMENT_ID NOT IN(50, 60, 80)
+; 
+---------------------------------------------------------------------
+부서별 사원수
+SELECT      DEPARTMENT_ID       부서번호,       -- DEPARTMENT_ID는 한줄이아니긴함
+            COUNT(EMPLOYEE_ID)  사원수
+FROM        EMPLOYEES
+GROUP BY    DEPARTMENT_ID   
+ORDER BY    부서번호 ASC
+;
+    -- ORA-00937: 단일 그룹의 그룹 함수가 아닙니다   "not a single-group group function"  = GROUP BY            
+
+--일반칼럼과 직계함수는 같이 사용할 수 없다
+--  => GROUP BY를 사용해야 가능
+
+-- 부서별 월급 합, 월급 평균
+SELECT      DEPARTMENT_ID        부서번호,
+            SUM(SALARY)            월급합,
+            ROUND(AVG(SALARY), 2) 월급평균
+FROM        EMPLOYEES
+GROUP BY    DEPARTMENT_ID
+ORDER BY    월급평균 ASC
+;
 
 
 
 
-
-
-
-
-
-
-
-
-오라클 :함수 프로시저 둘다잇슴
-자바함수뿐임
