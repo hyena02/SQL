@@ -24,7 +24,7 @@ DECLARE
     V_NAME  VARCHAR2(46);
     V_SAL   NUMBER(8, 2);
 BEGIN
-    V_NAME  := '카리나';
+    V_NAME  := '카리나'; 
     V_SAL   := 10000;
     DBMS_OUTPUT.PUT_LINE(V_NAME);
     DBMS_OUTPUT.PUT_LINE(V_SAL);
