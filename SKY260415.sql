@@ -125,10 +125,73 @@ ON EMP1(FIRST_NAME||' '||LAST_NAME);
     1) INSERT 회원정보 -> TRIGGER 가 INSERT 로그기록 명령을 호출해서 실행
     
     단점 : 로직추적이 쉽지 않다
-            트리거를 남발하지ㅏㅁㄹ라
+            트리거를 남발하지 마라
             
         BEFORE TRIGGER
-        AFTER TRIGGER ->
+        AFTER TRIGGER -> INSTEAD OF
+        
+        CREATE OR REPLACE TRIGGER TRG_EMP
+        AFTER INSERT ON EMP_BIG
+        FOR EACH ROW
+            BEGIN
+                INSERT 로그
+            END;
+        /
+        
+------------------------------
+트랜잭션 TRANSACTION
+
+송금 
+    1) 내 계좌에서  금액 -
+    2) 상대계좌에서 금액 +
+    
+    1) UPDATE MTABLE
+        SET   내계좌 = 내계좌 - 100
+    2) UPDATE MTABLE
+        SET   내계좌 = 내계좌 + 100
+    
+      1)번 종료 후 문제발생 시  2)번이 실행되지 않으면 문제 발생
+    BEGIN TRAN
+        UPDATE MTABLE
+            SET  내계좌 = 내계좌 - 100
+        UPDATE MTABLE
+            SET  내계좌 = 내계좌 + 100
+        COMMIT;
+    EXCEPTION
+        ROLLBACK;
+    END;
+    
+    1),2)번을 한 개의 작업 단위로 묶어서 적용
+    
+    
+    -----------------------------------------------------------------------
+    LOCK : DB잠김 - 상태
+    INSERT INTO TABLE1 VALUES(7, 'C','ㅎㅎ');
+    
+    SELECT * FROM TABLE1;
+    
+    WIN+R : CMD
+    >SQLPLUS SKY/1234
+    SQL>    INSERT INTO TABLE1 VALUES(7, 'C','ㅎㅎ');
+    
+    SQLDEVELOPER에서 
+    COMMIT;     하게되면 CMD에서 
+    
+(    INSERT INTO TABLE1 VALUES(7, 'C','ㅎㅎ')
+    *
+    1행에 오류:
+    ORA-00001: 무결성 제약 조건(SKY.SYS_C008413)에 위배됩니다
+)       
+        -->오류 메세지 뜸
+
+
+    
+    
+    
+    
+    
+    
+    
     
     
     
